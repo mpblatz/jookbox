@@ -9,32 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSession = void 0;
+exports.requireAuth = void 0;
 const supabase_1 = require("../lib/supabase");
-const user_controller_1 = require("./user.controller");
-const getSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e;
+const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.headers.authorization;
     if (!(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith("Bearer "))) {
         return res.status(401).json({ error: "Missing token" });
     }
     const token = authHeader.split(" ")[1];
-    const { data: { user: supabaseUser }, error, } = yield supabase_1.supabase.auth.getUser(token);
-    if (error || !supabaseUser) {
+    const { data: { user }, error, } = yield supabase_1.supabase.auth.getUser(token);
+    if (error || !user) {
         return res.status(401).json({ error: "Invalid token" });
     }
-    const email = supabaseUser.email || "";
-    const firstName = ((_b = (_a = supabaseUser.user_metadata) === null || _a === void 0 ? void 0 : _a.full_name) === null || _b === void 0 ? void 0 : _b.split(" ")[0]) || "";
-    const lastName = ((_d = (_c = supabaseUser.user_metadata) === null || _c === void 0 ? void 0 : _c.full_name) === null || _d === void 0 ? void 0 : _d.split(" ").slice(1).join(" ")) ||
-        "";
-    const username = ((_e = email.match(/^[^@]*/)) === null || _e === void 0 ? void 0 : _e[0]) || "";
-    const user = yield (0, user_controller_1.findOrCreateUser)({
-        supabaseId: supabaseUser.id,
-        email,
-        firstName,
-        lastName,
-        username,
-    });
-    return res.status(200).json({ user });
+    req.supabaseUser = user;
+    next();
 });
-exports.getSession = getSession;
+exports.requireAuth = requireAuth;

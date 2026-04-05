@@ -243,7 +243,7 @@ const getSongIdsByApplePlaylistId = (playlistId) => __awaiter(void 0, void 0, vo
     }
 });
 exports.getSongIdsByApplePlaylistId = getSongIdsByApplePlaylistId;
-const createApplePlaylist = ({ title, description, ids, musicUserToken, }) => __awaiter(void 0, void 0, void 0, function* () {
+const createApplePlaylist = (_a) => __awaiter(void 0, [_a], void 0, function* ({ title, description, ids, musicUserToken, }) {
     try {
         const developerToken = yield (0, exports.getAppleDeveloperTokenCached)();
         const playlistResponse = yield axios_1.default.post(`https://api.music.apple.com/v1/me/library/playlists`, {

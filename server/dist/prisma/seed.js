@@ -15,6 +15,7 @@ function seed() {
         yield Promise.all(getUsers().map((user) => {
             return db_server_1.db.user.create({
                 data: {
+                    supabaseId: `seed-${user.displayName}`,
                     displayName: user.displayName,
                     email: user.email,
                     firstName: user.firstName,

@@ -15,7 +15,7 @@ import { RootState } from "@/redux/store";
 import { savePost } from "@/api/routes/post";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import AuthModal from "./AuthModal";
 
 export default function SavePostModal({
     children,
@@ -218,18 +218,11 @@ export default function SavePostModal({
                         <DialogDescription>
                             You must be logged in to save a post.
                         </DialogDescription>
-                        <Button
-                            variant={"secondary"}
-                            className="flex space-x-4 w-fi"
-                            onClick={() => {
-                                window.location.href = `${
-                                    import.meta.env.VITE_SERVER_URL
-                                }/auth/google`;
-                            }}
-                        >
-                            <IconBrandGoogleFilled />
-                            <p>Login with Google</p>
-                        </Button>
+                        <AuthModal>
+                            <Button variant={"secondary"} className="flex space-x-4">
+                                <p>Login to Save</p>
+                            </Button>
+                        </AuthModal>
                     </>
                 )}
             </DialogContent>

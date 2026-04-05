@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchSpotify = exports.createSpotifyPlaylist = exports.getTrackUrisBySpotifyPlaylistId = exports.getTrackUrisByIsrcs = exports.getIsrcsBySpotifyPlaylistId = exports.getSpotifyPlaylistByIdInternal = exports.getSpotifyPlaylistById = exports.getTopSpotifyPlaylists = exports.getSpotifyPlaylistsByUserId = exports.getSpotifyUserId = exports.refreshAccessToken = exports.requestAccessToken = exports.requestSpotifyAuthorization = void 0;
+exports.searchSpotify = exports.createSpotifyPlaylist = exports.getTrackUrisBySpotifyPlaylistId = exports.getTrackUrisByIsrcs = exports.getIsrcsBySpotifyPlaylistId = exports.getSpotifyPlaylistByIdInternal = exports.getSpotifyPlaylistById = exports.getTopSpotifyPlaylists = exports.getSpotifyPlaylistsByUserId = exports.getSpotifyUserId = exports.refreshAccessToken = exports.requestAccessToken = exports.spotifyCallback = exports.requestSpotifyAuthorization = void 0;
 const axios_1 = __importDefault(require("axios"));
 const spotifyClientToken_1 = require("../utils/spotifyClientToken");
 const requestSpotifyAuthorization = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -30,6 +30,18 @@ const requestSpotifyAuthorization = (req, res) => __awaiter(void 0, void 0, void
         `&show_dialog=true`);
 });
 exports.requestSpotifyAuthorization = requestSpotifyAuthorization;
+const spotifyCallback = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { code, error } = req.query;
+    const clientCallbackUrl = process.env.SPOTIFY_CLIENT_CALLBACK_URL;
+    if (!clientCallbackUrl) {
+        return res.status(500).send("Server configuration error");
+    }
+    if (error) {
+        return res.redirect(`${clientCallbackUrl}?error=${error}`);
+    }
+    return res.redirect(`${clientCallbackUrl}?code=${code}`);
+});
+exports.spotifyCallback = spotifyCallback;
 const requestAccessToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const code = req.body.code;
@@ -77,7 +89,7 @@ const refreshAccessToken = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const expirationTime = new Date(new Date().getTime() + expires_in * 1000);
         return res.status(200).json({
             accessToken: access_token,
-            refreshToken: newRefreshToken || refreshToken,
+            refreshToken: newRefreshToken || refreshToken, // Send back the new refresh token if it exists, otherwise the old one
             expirationTime: expirationTime.toISOString(), // Convert to ISO string for easy handling on the client side
         });
     }
@@ -305,7 +317,7 @@ const getTrackUrisBySpotifyPlaylistId = (playlistId) => __awaiter(void 0, void 0
     }
 });
 exports.getTrackUrisBySpotifyPlaylistId = getTrackUrisBySpotifyPlaylistId;
-const createSpotifyPlaylist = ({ title, description, ids, accessToken, }) => __awaiter(void 0, void 0, void 0, function* () {
+const createSpotifyPlaylist = (_a) => __awaiter(void 0, [_a], void 0, function* ({ title, description, ids, accessToken, }) {
     try {
         const userId = yield getSpotifyUserIdInternal(accessToken);
         const playlistResponse = yield axios_1.default.post(`https://api.spotify.com/v1/users/${userId}/playlists`, {

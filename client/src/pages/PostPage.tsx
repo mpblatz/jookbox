@@ -88,7 +88,7 @@ export default function PostPage({ showComments = false }) {
                             <img
                                 key={"image" + song.imageUrl}
                                 src={song.imageUrl}
-                                className="w-12 h-12"
+                                className="w-12 h-12 rounded"
                             />
                             <div className="flex flex-col">
                                 <p className="font-medium">{song.title}</p>
@@ -153,8 +153,20 @@ export default function PostPage({ showComments = false }) {
     return (
         <>
             <div className="flex flex-col space-y-1">
-                <h3>{post?.title}</h3>
-                <p>{post?.description}</p>
+                <div className="flex flex-row justify-between items-start">
+                    <div>
+                        <h3 className="text-2xl font-bold">{post?.title}</h3>
+                        <p className="text-silver">{post?.description}</p>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        className="flex items-center space-x-1 shrink-0"
+                        onClick={() => navigate(`/user/${post?.author.id}`)}
+                    >
+                        <CircleUserRound size={18} />
+                        <p>{post.author.displayName}</p>
+                    </Button>
+                </div>
                 <div className="flex flex-row justify-between items-end py-2">
                     <div className="flex flex-row items-center space-x-1">
                         <Button
@@ -201,33 +213,20 @@ export default function PostPage({ showComments = false }) {
                         </Button>
 
                         <SavePostModal post={post}>
-                            <Button
-                                variant="outline"
-                                className="flex space-x-2 items-center"
-                            >
+                            <Button className="flex space-x-2 items-center">
                                 <div className="flex items-center space-x-1">
                                     <RefreshCcwDot size={18} />
-                                    <p>{post.saves}</p>
+                                    <p>Save{post.saves > 0 ? ` · ${post.saves}` : ""}</p>
                                 </div>
                             </Button>
                         </SavePostModal>
                     </div>
 
-                    <div className="flex space-x-1">
-                        {isCurrentUser ? (
-                            <DeletePostModal id={id}>
-                                <Button variant="outline">Delete</Button>
-                            </DeletePostModal>
-                        ) : null}
-                        <Button
-                            variant="outline"
-                            className="w-fit flex items-center space-x-1"
-                            onClick={() => navigate(`/user/${post?.author.id}`)}
-                        >
-                            <CircleUserRound size={18} />
-                            <p>{post.author.displayName}</p>
-                        </Button>
-                    </div>
+                    {isCurrentUser ? (
+                        <DeletePostModal id={id}>
+                            <Button variant="outline">Delete</Button>
+                        </DeletePostModal>
+                    ) : null}
                 </div>
                 <hr />
 

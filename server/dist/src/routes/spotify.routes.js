@@ -4,6 +4,7 @@ const express_1 = require("express");
 const spotify_controller_1 = require("../controllers/spotify.controller");
 const spotifyRoutes = (0, express_1.Router)();
 spotifyRoutes.get("/auth", spotify_controller_1.requestSpotifyAuthorization);
+spotifyRoutes.get("/callback", spotify_controller_1.spotifyCallback);
 spotifyRoutes.post("/token", spotify_controller_1.requestAccessToken);
 spotifyRoutes.post("/refresh", spotify_controller_1.refreshAccessToken);
 spotifyRoutes.post("/id", spotify_controller_1.getSpotifyUserId);

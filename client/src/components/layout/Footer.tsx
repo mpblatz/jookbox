@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="flex flex-row justify-center items-center mt-2 space-x-4">
                 <p className="text-sm">
                     Made by{" "}
-                    <a href="https://bla.tz" className="hover:underline">
+                    <a href="https://mblatz.com" className="hover:underline">
                         Marshall
                     </a>
                 </p>

@@ -38,6 +38,10 @@ app.get("/ping", (_req, res) => {
     return res.send("pong 🏓");
 });
 
+app.get("/health", (_req, res) => {
+    return res.status(200).json({ status: "ok" });
+});
+
 // api routes
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);

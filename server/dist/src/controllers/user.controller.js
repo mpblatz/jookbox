@@ -11,10 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.updateUser = exports.findOrCreateUser = exports.getUser = exports.createUser = void 0;
 const db_server_1 = require("../utils/db.server");
-const createUser = ({ firstName, lastName, username, email, }) => __awaiter(void 0, void 0, void 0, function* () {
+const createUser = (_a) => __awaiter(void 0, [_a], void 0, function* ({ supabaseId, firstName, lastName, username, email, }) {
     try {
         const result = yield db_server_1.db.user.create({
             data: {
+                supabaseId,
                 firstName: firstName,
                 lastName: lastName,
                 displayName: username,
@@ -54,11 +55,11 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getUser = getUser;
-const findOrCreateUser = ({ firstName, lastName, username, email, }) => __awaiter(void 0, void 0, void 0, function* () {
+const findOrCreateUser = (_a) => __awaiter(void 0, [_a], void 0, function* ({ supabaseId, firstName, lastName, username, email, }) {
     try {
         const existingUser = yield db_server_1.db.user.findUnique({
             where: {
-                email: email,
+                supabaseId,
             },
         });
         if (existingUser) {
@@ -66,6 +67,7 @@ const findOrCreateUser = ({ firstName, lastName, username, email, }) => __awaite
         }
         else {
             const newUser = yield (0, exports.createUser)({
+                supabaseId,
                 firstName,
                 lastName,
                 username,

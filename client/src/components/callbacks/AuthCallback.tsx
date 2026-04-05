@@ -12,7 +12,7 @@ export default function AuthCallback() {
     useEffect(() => {
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, session) => {
+        } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (session) {
                 try {
                     const { data } = await axiosInstance.get("/auth/session", {

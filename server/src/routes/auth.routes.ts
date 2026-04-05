@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { googleAuth, googleAuthCallback } from "../controllers/auth.controller";
+import { getSession } from "../controllers/auth.controller";
 
 const authRoutes = Router();
 
-authRoutes.get("/google", googleAuth);
-authRoutes.get("/google/callback", googleAuthCallback);
+authRoutes.get("/session", getSession);
 
 export default authRoutes;

@@ -15,7 +15,6 @@ interface User {
     following?: Follow[];
     posts?: [];
     saves: number;
-    token: string;
 }
 
 interface Follow {

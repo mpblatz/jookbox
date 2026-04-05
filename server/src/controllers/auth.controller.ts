@@ -1,65 +1,39 @@
-import { randomBytes } from "crypto";
 import { Request, Response } from "express";
-import { google } from "googleapis";
-import { sign } from "jsonwebtoken";
-
+import { supabase } from "../lib/supabase";
 import { findOrCreateUser } from "./user.controller";
 
-const generateJWTSecret = () => {
-    // Generate a random 256-bit (32-byte) secret key
-    const secret = randomBytes(32).toString("base64");
-    return secret;
-};
+export const getSession = async (req: Request, res: Response) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Missing token" });
+    }
 
-const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID, // Client ID
-    process.env.GOOGLE_CLIENT_SECRET, // Client Secret
-    process.env.GOOGLE_REDIRECT_URL // Redirect URL
-);
+    const token = authHeader.split(" ")[1];
 
-const scopes = [
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "https://www.googleapis.com/auth/userinfo.email",
-];
+    const {
+        data: { user: supabaseUser },
+        error,
+    } = await supabase.auth.getUser(token);
 
-export const googleAuth = (req: Request, res: Response) => {
-    const url = oauth2Client.generateAuthUrl({
-        access_type: "offline",
-        scope: scopes,
-    });
-    res.redirect(url);
-};
+    if (error || !supabaseUser) {
+        return res.status(401).json({ error: "Invalid token" });
+    }
 
-export const googleAuthCallback = async (req: Request, res: Response) => {
-    const { code } = req.query;
+    const email = supabaseUser.email || "";
+    const firstName =
+        supabaseUser.user_metadata?.full_name?.split(" ")[0] || "";
+    const lastName =
+        supabaseUser.user_metadata?.full_name?.split(" ").slice(1).join(" ") ||
+        "";
+    const username = email.match(/^[^@]*/)?.[0] || "";
 
-    const { tokens } = await oauth2Client.getToken(code as string);
-    oauth2Client.setCredentials(tokens);
-
-    // For example, retrieve the user's profile information
-    const oauth2 = google.oauth2({
-        auth: oauth2Client,
-        version: "v2",
-    });
-
-    const oauth2Info = await oauth2.userinfo.get();
-
-    const email = oauth2Info.data?.email || "";
-    const firstName = oauth2Info.data?.given_name || "";
-    const lastName = oauth2Info.data?.family_name || "";
-    const username = (oauth2Info.data?.email || "").match(/^[^@]*/)?.[0] || "";
-
-    const userInfo = await findOrCreateUser({
+    const user = await findOrCreateUser({
+        supabaseId: supabaseUser.id,
         email,
         firstName,
         lastName,
         username,
     });
 
-    const token = sign(
-        { user: userInfo },
-        process.env.JWT_SECRET || generateJWTSecret()
-    );
-
-    res.redirect(`${process.env.CLIENT_AUTH_CALLBACK_URL}?token=${token}`);
+    return res.status(200).json({ user });
 };

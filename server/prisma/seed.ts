@@ -47,6 +47,7 @@ async function seed() {
         getUsers().map((user) => {
             return db.user.create({
                 data: {
+                    supabaseId: `seed-${user.displayName}`,
                     displayName: user.displayName,
                     email: user.email,
                     firstName: user.firstName,

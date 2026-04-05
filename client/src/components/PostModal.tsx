@@ -237,6 +237,7 @@ export default function PostModal({ children }: { children: JSX.Element }) {
                                     <div className="w-1/2">
                                         {isSpotifyTokenExpired(spotifyToken) ? (
                                             <Button
+                                                type="button"
                                                 variant="link"
                                                 className="underline text-xs text-silver"
                                                 onClick={() => {

@@ -1,14 +1,21 @@
 // client/src/api/axios.ts
 import axios from "axios";
-import Cookies from "js-cookie";
+import { supabase } from "@/lib/supabase";
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_URL || "http://localhost:3300/api",
-    headers: {
-        common: {
-            Authorization: `Bearer ${Cookies.get("token")}` ?? "",
-        },
-    },
+});
+
+axiosInstance.interceptors.request.use(async (config) => {
+    const {
+        data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session?.access_token) {
+        config.headers.Authorization = `Bearer ${session.access_token}`;
+    }
+
+    return config;
 });
 
 export default axiosInstance;

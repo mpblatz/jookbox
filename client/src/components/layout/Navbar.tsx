@@ -3,6 +3,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { clearUser } from "@/redux/features/user/userSlice";
+import { supabase } from "@/lib/supabase";
 import PostModal from "../PostModal";
 import {
     NavigationMenu,
@@ -22,7 +23,8 @@ export default function Navbar() {
     const navigate = useNavigate();
 
     const logoutWithRedirect = async () => {
-        await dispatch(clearUser());
+        await supabase.auth.signOut();
+        dispatch(clearUser());
         navigate("/");
     };
 

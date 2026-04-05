@@ -1,21 +1,36 @@
-import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "@/redux/features/user/userSlice";
+import { supabase } from "@/lib/supabase";
+import axiosInstance from "@/api/axios";
 
-export default function AuthCallback({}: {}) {
+export default function AuthCallback() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get("token");
 
-        if (token) {
-            const data: { user: {} } = jwtDecode(token);
-            dispatch(setUser(data.user));
-            navigate("/");
-        }
+    useEffect(() => {
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (session) {
+                try {
+                    const { data } = await axiosInstance.get("/auth/session", {
+                        headers: {
+                            Authorization: `Bearer ${session.access_token}`,
+                        },
+                    });
+                    dispatch(setUser(data.user));
+                } catch (error) {
+                    console.error("Failed to fetch user session:", error);
+                }
+                navigate("/");
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
     return (

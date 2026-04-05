@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
     searchSpotify,
     requestSpotifyAuthorization,
+    spotifyCallback,
     requestAccessToken,
     refreshAccessToken,
     getSpotifyUserId,
@@ -13,6 +14,7 @@ import {
 const spotifyRoutes = Router();
 
 spotifyRoutes.get("/auth", requestSpotifyAuthorization);
+spotifyRoutes.get("/callback", spotifyCallback);
 spotifyRoutes.post("/token", requestAccessToken);
 spotifyRoutes.post("/refresh", refreshAccessToken);
 

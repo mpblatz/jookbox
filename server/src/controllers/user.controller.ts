@@ -3,11 +3,13 @@ import { Request, Response } from "express";
 import { db } from "../utils/db.server";
 
 export const createUser = async ({
+    supabaseId,
     firstName,
     lastName,
     username,
     email,
 }: {
+    supabaseId: string;
     firstName: string;
     lastName: string;
     username: string;
@@ -16,6 +18,7 @@ export const createUser = async ({
     try {
         const result = await db.user.create({
             data: {
+                supabaseId,
                 firstName: firstName,
                 lastName: lastName,
                 displayName: username,
@@ -54,11 +57,13 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const findOrCreateUser = async ({
+    supabaseId,
     firstName,
     lastName,
     username,
     email,
 }: {
+    supabaseId: string;
     firstName: string;
     lastName: string;
     username: string;
@@ -67,7 +72,7 @@ export const findOrCreateUser = async ({
     try {
         const existingUser = await db.user.findUnique({
             where: {
-                email: email,
+                supabaseId,
             },
         });
 
@@ -75,6 +80,7 @@ export const findOrCreateUser = async ({
             return existingUser;
         } else {
             const newUser = await createUser({
+                supabaseId,
                 firstName,
                 lastName,
                 username,

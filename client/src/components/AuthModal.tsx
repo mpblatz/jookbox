@@ -9,6 +9,7 @@ import {
     DialogTrigger,
 } from "./ui/dialog";
 import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import { supabase } from "@/lib/supabase";
 
 function simulateEscKeyPress() {
     const event = new KeyboardEvent("keydown", {
@@ -22,6 +23,15 @@ function simulateEscKeyPress() {
 }
 
 export default function AuthModal({ children }: { children: JSX.Element }) {
+    const handleGoogleLogin = async () => {
+        await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: `${window.location.origin}/callback/auth`,
+            },
+        });
+    };
+
     return (
         <Dialog>
             <DialogTrigger asChild>{children}</DialogTrigger>
@@ -32,11 +42,7 @@ export default function AuthModal({ children }: { children: JSX.Element }) {
                 <Button
                     variant={"secondary"}
                     className="flex space-x-4"
-                    onClick={() => {
-                        window.location.href = `${
-                            import.meta.env.VITE_SERVER_URL
-                        }/auth/google`;
-                    }}
+                    onClick={handleGoogleLogin}
                 >
                     <IconBrandGoogleFilled />
                     <p>Login with Google</p>

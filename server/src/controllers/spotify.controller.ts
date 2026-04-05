@@ -26,6 +26,18 @@ export const requestSpotifyAuthorization = async (
     );
 };
 
+export const spotifyCallback = async (req: Request, res: Response) => {
+    const { code, error } = req.query;
+    const clientCallbackUrl = process.env.SPOTIFY_CLIENT_CALLBACK_URL;
+    if (!clientCallbackUrl) {
+        return res.status(500).send("Server configuration error");
+    }
+    if (error) {
+        return res.redirect(`${clientCallbackUrl}?error=${error}`);
+    }
+    return res.redirect(`${clientCallbackUrl}?code=${code}`);
+};
+
 export const requestAccessToken = async (req: Request, res: Response) => {
     try {
         const code = req.body.code;

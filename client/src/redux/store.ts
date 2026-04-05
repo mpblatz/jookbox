@@ -4,7 +4,7 @@ import userReducer from "./features/user/userSlice";
 import spotifyReducer from "./features/spotify/spotifySlice";
 import appleReducer from "./features/apple/appleSlice";
 import { apiSlice } from "./api/apiSlice";
-import storage from "redux-persist/lib/storage";
+import storage from "redux-persist/es/storage";
 import { persistReducer, persistStore } from "redux-persist";
 
 const persistConfig = {

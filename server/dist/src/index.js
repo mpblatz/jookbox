@@ -70,6 +70,9 @@ app.use((0, cors_1.default)(corsOptions));
 app.get("/ping", (_req, res) => {
     return res.send("pong 🏓");
 });
+app.get("/health", (_req, res) => {
+    return res.status(200).json({ status: "ok" });
+});
 // api routes
 app.use("/api/user", user_routes_1.default);
 app.use("/api/post", post_routes_1.default);

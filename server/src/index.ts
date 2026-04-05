@@ -19,12 +19,9 @@ dotenv.config();
 const app: Application = express();
 const corsOptions = {
     origin: [
-        "https://jookbox.co",
-        "https://www.jookbox.co",
-        "https://www.jookbox.co/",
+        "https://jookbox.mblatz.com",
+        "https://jookbox.onrender.com",
         "http://localhost:5173",
-        "https://cureight.vercel.app",
-        "https://curate-api.vercel.app",
     ],
     credentials: true,
 };

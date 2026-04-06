@@ -13,6 +13,7 @@ import likeRoutes from "./routes/like.routes";
 import appleRoutes from "./routes/apple.routes";
 import searchRoutes from "./routes/search.routes";
 import playlistRoutes from "./routes/playlist.route";
+import { db } from "./utils/db.server";
 
 dotenv.config();
 
@@ -35,8 +36,13 @@ app.get("/ping", (_req, res) => {
     return res.send("pong 🏓");
 });
 
-app.get("/health", (_req, res) => {
-    return res.status(200).json({ status: "ok" });
+app.get("/health", async (_req, res) => {
+    try {
+        await db.$queryRaw`SELECT 1`;
+        return res.status(200).json({ status: "ok" });
+    } catch (e) {
+        return res.status(500).json({ status: "error", message: "db unreachable" });
+    }
 });
 
 // api routes

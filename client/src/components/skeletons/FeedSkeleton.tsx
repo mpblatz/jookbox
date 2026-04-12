@@ -1,5 +1,6 @@
 import { Skeleton } from "../ui/skeleton";
 
+
 export default function FeedSkeleton() {
     return (
         <div className="space-y-6">

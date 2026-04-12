@@ -12,19 +12,37 @@ export default function PlaylistFeed({
     const renderFeed = () => {
         if (Object.keys(playlists).length === 0) {
             return (
-                <div className="h-[300px] flex justify-center items-center">
-                    <p>{emptyMessage}</p>
+                <div
+                    style={{
+                        height: "300px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
+                    <p style={{ color: "var(--text-muted)" }}>{emptyMessage}</p>
                 </div>
             );
         } else {
             return (
-                <div className="flex flex-col space-y-6">
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "24px",
+                    }}
+                >
                     {playlists.map((playlist) => (
                         <div
                             key={playlist.id}
-                            className="flex flex-row items-center w-full space-x-4"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                width: "100%",
+                                gap: "16px",
+                            }}
                         >
-                            <div className="w-[55%]">
+                            <div style={{ width: "55%" }}>
                                 <Preview
                                     source={playlist}
                                     path={`/top/${playlist.origin}/${playlist.id}`}
@@ -32,26 +50,66 @@ export default function PlaylistFeed({
                             </div>
 
                             <div
-                                id="keep-380"
-                                className="flex flex-col w-[380px] flex-shrink-0 self-start mt-2 space-y-1"
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    width: "380px",
+                                    flexShrink: 0,
+                                    alignSelf: "flex-start",
+                                    marginTop: "8px",
+                                    gap: "4px",
+                                }}
                             >
                                 <button
-                                    className="w-fit"
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        padding: 0,
+                                        textAlign: "left",
+                                        width: "fit-content",
+                                    }}
                                     onClick={() =>
                                         navigate(
                                             `/top/${playlist.origin}/${playlist.id}`
                                         )
                                     }
                                 >
-                                    <p className="text-ellipsis	whitespace-nowrap overflow-hidden text-xl font-bold">
+                                    <p
+                                        style={{
+                                            fontSize: "1.25rem",
+                                            fontWeight: 700,
+                                            color: "var(--text)",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                        }}
+                                    >
                                         {playlist.title}
                                     </p>
                                 </button>
-                                <div className="flex flex-row space-x-8 text-silver">
-                                    <p>{playlist.author.displayName}</p>
-                                    <p>{playlist.total} songs</p>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "24px",
+                                        color: "var(--text-muted)",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    <span>
+                                        {playlist.author.displayName}
+                                    </span>
+                                    <span>{playlist.total} songs</span>
                                 </div>
-                                <p className="text-ellipsis	whitespace-nowrap overflow-hidden text-silver">
+                                <p
+                                    style={{
+                                        color: "var(--text-muted)",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        fontSize: "14px",
+                                    }}
+                                >
                                     {playlist.description}
                                 </p>
                             </div>

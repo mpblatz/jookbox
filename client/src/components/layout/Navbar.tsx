@@ -1,23 +1,20 @@
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { IconPlus } from "@tabler/icons-react";
+import { Plus, ChevronDown, Sun, Moon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { clearUser } from "@/redux/features/user/userSlice";
 import { supabase } from "@/lib/supabase";
 import PostModal from "../PostModal";
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-} from "../ui/navigation-menu";
-import { Button } from "../ui/button";
 import AuthModal from "../AuthModal";
 import AboutModal from "../AboutModal";
+import { useTheme } from "../theme-provider";
 
 export default function Navbar() {
     const user = useSelector((state: RootState) => state.userReducer.user);
+    const { theme, setTheme } = useTheme();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -28,74 +25,233 @@ export default function Navbar() {
         navigate("/");
     };
 
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const navBtnStyle: React.CSSProperties = {
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        color: "var(--text)",
+        fontSize: "14px",
+        fontFamily: "'IBM Plex Sans', sans-serif",
+        fontWeight: 500,
+        padding: "6px 12px",
+        borderRadius: "8px",
+        transition: "background 0.2s ease",
+    };
+
+    const navBtnHover = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.currentTarget.style.background = "var(--btn-bg)";
+    };
+    const navBtnLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.currentTarget.style.background = "none";
+    };
+
     return (
-        <div className="flex flex-col justify-center space-y-2">
-            <div className="justify-between flex flex-row items-center py-2 w-full">
-                <Button
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "8px 0",
+                }}
+            >
+                <button
                     onClick={() => navigate("/")}
-                    className="w-[110px]"
-                    variant="ghost"
+                    style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: 0,
+                    }}
                 >
-                    <p className="mt-[-10px] logo-text text-4xl"> jookbox</p>
-                </Button>
-                <div className="flex flex-row items-center space-x-1">
-                    <Button onClick={() => navigate("/")} variant="ghost">
+                    <p
+                        className="logo-text"
+                        style={{
+                            fontSize: "2.25rem",
+                            color: "var(--text)",
+                            marginTop: "-10px",
+                        }}
+                    >
+                        jookbox
+                    </p>
+                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <button
+                        onClick={() =>
+                            setTheme(theme === "light" ? "dark" : "light")
+                        }
+                        style={{
+                            ...navBtnStyle,
+                            padding: "6px",
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                        onMouseEnter={navBtnHover}
+                        onMouseLeave={navBtnLeave}
+                    >
+                        {theme === "light" ? (
+                            <Moon size={16} />
+                        ) : (
+                            <Sun size={16} />
+                        )}
+                    </button>
+                    <button
+                        onClick={() => navigate("/")}
+                        style={navBtnStyle}
+                        onMouseEnter={navBtnHover}
+                        onMouseLeave={navBtnLeave}
+                    >
                         Home
-                    </Button>
-                    <Button onClick={() => navigate("/search")} variant="ghost">
+                    </button>
+                    <button
+                        onClick={() => navigate("/search")}
+                        style={navBtnStyle}
+                        onMouseEnter={navBtnHover}
+                        onMouseLeave={navBtnLeave}
+                    >
                         Search
-                    </Button>
+                    </button>
                     <AboutModal>
-                        <Button variant="ghost">About</Button>
+                        <button
+                            style={navBtnStyle}
+                            onMouseEnter={navBtnHover}
+                            onMouseLeave={navBtnLeave}
+                        >
+                            About
+                        </button>
                     </AboutModal>
                     {user ? (
                         <>
-                            <NavigationMenu>
-                                <NavigationMenuList>
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger>
-                                            {user.displayName}
-                                        </NavigationMenuTrigger>
-                                        <NavigationMenuContent>
-                                            <div className="flex flex-col items-start bg-b-secondary drop-shadow dark:bg-db-secondary rounded-md space-y-1 p-2 min-w-[90px]">
-                                                <Button
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/user/${user?.id}`
-                                                        )
-                                                    }
-                                                    variant={"ghost"}
-                                                >
-                                                    Profile
-                                                </Button>
-                                                <Button
-                                                    onClick={() => {
-                                                        logoutWithRedirect();
-                                                    }}
-                                                    variant={"ghost"}
-                                                >
-                                                    Logout
-                                                </Button>
-                                            </div>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                </NavigationMenuList>
-                            </NavigationMenu>
+                            <div
+                                ref={menuRef}
+                                style={{ position: "relative" }}
+                            >
+                                <button
+                                    onClick={() => setMenuOpen(!menuOpen)}
+                                    style={{
+                                        ...navBtnStyle,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "4px",
+                                    }}
+                                    onMouseEnter={navBtnHover}
+                                    onMouseLeave={navBtnLeave}
+                                >
+                                    {user.displayName}
+                                    <ChevronDown
+                                        size={14}
+                                        style={{
+                                            transition: "transform 0.2s ease",
+                                            transform: menuOpen
+                                                ? "rotate(180deg)"
+                                                : "rotate(0deg)",
+                                        }}
+                                    />
+                                </button>
+                                {menuOpen && (
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "100%",
+                                            right: 0,
+                                            marginTop: "4px",
+                                            background: "var(--card-bg)",
+                                            border: "1px solid var(--border)",
+                                            borderRadius: "8px",
+                                            padding: "4px",
+                                            minWidth: "120px",
+                                            boxShadow: "var(--shadow-hover)",
+                                            zIndex: 50,
+                                        }}
+                                    >
+                                        <button
+                                            onClick={() => {
+                                                navigate(`/user/${user?.id}`);
+                                                setMenuOpen(false);
+                                            }}
+                                            style={{
+                                                ...navBtnStyle,
+                                                width: "100%",
+                                                textAlign: "left",
+                                            }}
+                                            onMouseEnter={navBtnHover}
+                                            onMouseLeave={navBtnLeave}
+                                        >
+                                            Profile
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                logoutWithRedirect();
+                                                setMenuOpen(false);
+                                            }}
+                                            style={{
+                                                ...navBtnStyle,
+                                                width: "100%",
+                                                textAlign: "left",
+                                            }}
+                                            onMouseEnter={navBtnHover}
+                                            onMouseLeave={navBtnLeave}
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                             <PostModal>
-                                <Button>
-                                    <IconPlus className="ml-[-4px] mr-2 h-4 w-4" />{" "}
+                                <button
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px",
+                                        background: "var(--accent)",
+                                        color: "#fff",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        fontSize: "14px",
+                                        fontFamily: "'IBM Plex Sans', sans-serif",
+                                        fontWeight: 600,
+                                        padding: "6px 14px",
+                                        borderRadius: "8px",
+                                        transition: "background 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) =>
+                                        (e.currentTarget.style.background =
+                                            "var(--accent-hover)")
+                                    }
+                                    onMouseLeave={(e) =>
+                                        (e.currentTarget.style.background =
+                                            "var(--accent)")
+                                    }
+                                >
+                                    <Plus size={16} />
                                     Post
-                                </Button>
+                                </button>
                             </PostModal>
                         </>
                     ) : (
                         <AuthModal>
-                            <Button variant="ghost">Login</Button>
+                            <button
+                                style={navBtnStyle}
+                                onMouseEnter={navBtnHover}
+                                onMouseLeave={navBtnLeave}
+                            >
+                                Login
+                            </button>
                         </AuthModal>
                     )}
                 </div>
             </div>
-            <hr />
+            <div style={{ borderTop: "1px solid var(--divider)" }} />
         </div>
     );
 }

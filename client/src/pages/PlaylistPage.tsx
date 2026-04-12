@@ -3,9 +3,23 @@ import { useGetSpotifyPlaylistByIdQuery } from "@/redux/api/routes/spotify";
 import { useGetApplePlaylistByIdQuery } from "@/redux/api/routes/apple";
 import { skipToken } from "@reduxjs/toolkit/query";
 import ViewSkeleton from "@/components/skeletons/ViewSkeleton";
-import { Button } from "@/components/ui/button";
 import { CircleUserRound, RefreshCcwDot } from "lucide-react";
 import SavePlaylistModal from "@/components/SavePlaylistModal";
+
+const outlineBtnStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    padding: "6px 12px",
+    background: "var(--btn-bg)",
+    border: "1px solid var(--btn-border)",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontFamily: "'IBM Plex Sans', sans-serif",
+    color: "var(--text)",
+    transition: "border-color 0.2s ease",
+};
 
 export default function PlaylistPage() {
     const { id } = useParams<{ id: string }>();
@@ -35,20 +49,42 @@ export default function PlaylistPage() {
     const renderSongs = () => {
         if (playlist.songs.length > 0) {
             return (
-                <div className="flex flex-col space-y-2 mt-4">
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                        marginTop: "16px",
+                    }}
+                >
                     {playlist.songs.map((song, index) => (
                         <div
                             key={index}
-                            className="flex flex-row space-x-4 items-center"
+                            style={{
+                                display: "flex",
+                                gap: "16px",
+                                alignItems: "center",
+                            }}
                         >
                             <img
                                 src={song.imageUrl}
                                 alt=""
-                                className="w-12 h-12"
+                                style={{
+                                    width: "48px",
+                                    height: "48px",
+                                    borderRadius: "6px",
+                                }}
                             />
-                            <div className="flex flex-col">
-                                <p className="font-medium">{song.title}</p>
-                                <p className="text-silver">{song.artist}</p>
+                            <div>
+                                <p style={{ fontWeight: 500 }}>{song.title}</p>
+                                <p
+                                    style={{
+                                        color: "var(--text-muted)",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    {song.artist}
+                                </p>
                             </div>
                         </div>
                     ))}
@@ -56,7 +92,14 @@ export default function PlaylistPage() {
             );
         } else {
             return (
-                <div className="h-[300px] flex justify-center items-center">
+                <div
+                    style={{
+                        height: "300px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
                     <p>It looks like this playlist is empty.</p>
                 </div>
             );
@@ -64,40 +107,74 @@ export default function PlaylistPage() {
     };
 
     return (
-        <div className="flex flex-col space-y-2">
-            <div className="space-y-1">
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+            }}
+        >
+            <div>
                 <h3>{playlist.title}</h3>
-                <p>{playlist.description}</p>
+                <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
+                    {playlist.description}
+                </p>
             </div>
-            <div className="flex flex-row justify-between items-end">
-                <div className="flex items-center space-x-4">
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                    }}
+                >
                     <SavePlaylistModal playlist={playlist}>
-                        <Button
-                            variant="outline"
-                            className="flex space-x-2 items-center"
+                        <button
+                            style={outlineBtnStyle}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.borderColor =
+                                    "var(--btn-hover-border)")
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.borderColor =
+                                    "var(--btn-border)")
+                            }
                         >
-                            <div className="flex items-center space-x-1">
-                                <RefreshCcwDot size={18} />
-                                <p>Save</p>
-                            </div>
-                        </Button>
+                            <RefreshCcwDot size={18} />
+                            Save
+                        </button>
                     </SavePlaylistModal>
-                    <p>{playlist.total} songs</p>
+                    <p style={{ fontSize: "14px", color: "var(--text-muted)" }}>
+                        {playlist.total} songs
+                    </p>
                 </div>
-                <Button
-                    variant="outline"
-                    className="flex items-center space-x-1"
+                <button
                     onClick={() =>
                         navigate(
                             `/discover/${playlist.author.displayName.toLowerCase()}`
                         )
                     }
+                    style={outlineBtnStyle}
+                    onMouseEnter={(e) =>
+                        (e.currentTarget.style.borderColor =
+                            "var(--btn-hover-border)")
+                    }
+                    onMouseLeave={(e) =>
+                        (e.currentTarget.style.borderColor =
+                            "var(--btn-border)")
+                    }
                 >
                     <CircleUserRound size={18} />
-                    <p>{playlist.author.displayName}</p>
-                </Button>
+                    {playlist.author.displayName}
+                </button>
             </div>
-            <hr />
+            <div style={{ borderTop: "1px solid var(--divider)" }} />
             {renderSongs()}
         </div>
     );

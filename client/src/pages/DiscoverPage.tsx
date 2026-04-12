@@ -40,22 +40,22 @@ export default function DiscoverPage() {
     if (error) return <div>Error fetching posts</div>;
 
     return (
-        <div className="space-y-6">
-            <div className="space-y-2">
-                <div className="flex space-x-4">
-                    <StyledNavLink
-                        to="/discover/spotify"
-                        label="Top Spotify Playlists"
-                        pendingClasses=""
-                        activeClasses="border-b-2 border-primary"
-                    />
-                    <StyledNavLink
-                        to="/discover/apple"
-                        label="Top Apple Music Playlists"
-                        pendingClasses=""
-                        activeClasses="border-b-2 border-primary"
-                    />
-                </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div style={{ display: "flex", gap: "16px" }}>
+                <StyledNavLink
+                    to="/discover/spotify"
+                    label="Top Spotify Playlists"
+                    pendingClasses=""
+                    activeClasses="border-b-2"
+                    style={{ borderColor: "var(--accent)" }}
+                />
+                <StyledNavLink
+                    to="/discover/apple"
+                    label="Top Apple Music Playlists"
+                    pendingClasses=""
+                    activeClasses="border-b-2"
+                    style={{ borderColor: "var(--accent)" }}
+                />
             </div>
 
             <PlaylistFeed

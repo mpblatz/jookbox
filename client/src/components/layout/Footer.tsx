@@ -1,30 +1,75 @@
-import "remixicon/fonts/remixicon.css";
-import { Separator } from "../ui/separator";
 import { useNavigate } from "react-router-dom";
 
 export default function Footer() {
     const navigate = useNavigate();
 
+    const linkStyle: React.CSSProperties = {
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        fontSize: "11px",
+        fontFamily: "'JetBrains Mono', monospace",
+        color: "var(--text-very-faint)",
+        padding: 0,
+        transition: "color 0.2s ease",
+    };
+
     return (
-        <div className="">
-            <Separator />
-            <div className="flex flex-row justify-center items-center mt-2 space-x-4">
-                <p className="text-sm">
+        <div>
+            <div style={{ borderTop: "1px solid var(--divider)" }} />
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "16px",
+                    paddingTop: "12px",
+                    fontFamily: "'JetBrains Mono', monospace",
+                    color: "var(--text-very-faint)",
+                }}
+            >
+                <p className="text-[11px]">
                     Made by{" "}
-                    <a href="https://mblatz.com" className="hover:underline">
+                    <a
+                        href="https://mblatz.com"
+                        style={{
+                            color: "var(--text-very-faint)",
+                            textDecoration: "none",
+                            transition: "color 0.2s ease",
+                        }}
+                        onMouseEnter={(e) =>
+                            (e.currentTarget.style.color = "var(--text-faint)")
+                        }
+                        onMouseLeave={(e) =>
+                            (e.currentTarget.style.color =
+                                "var(--text-very-faint)")
+                        }
+                    >
                         Marshall
                     </a>
                 </p>
-                <p>●</p>
+                <span>·</span>
                 <button
-                    className="w-fit p-0 text-sm text-white font-normal hover:underline"
+                    style={linkStyle}
                     onClick={() => navigate("/privacy-policy")}
+                    onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = "var(--text-faint)")
+                    }
+                    onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = "var(--text-very-faint)")
+                    }
                 >
                     Privacy
                 </button>
                 <button
-                    className="w-fit p-0 text-sm text-white font-normal hover:underline"
+                    style={linkStyle}
                     onClick={() => navigate("/terms-of-service")}
+                    onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = "var(--text-faint)")
+                    }
+                    onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = "var(--text-very-faint)")
+                    }
                 >
                     Terms
                 </button>

@@ -26,10 +26,8 @@ export default function Preview({
             }
         };
 
-        // Calculate on mount
         calculateAndSetImageStyles();
 
-        // Adjust on window resize
         window.addEventListener("resize", calculateAndSetImageStyles);
 
         return () =>
@@ -39,8 +37,17 @@ export default function Preview({
     return (
         <button
             ref={buttonRef}
-            className="flex flex-row drop-shadow-xl overflow-hidden w-full"
             onClick={() => navigate(path)}
+            style={{
+                display: "flex",
+                overflow: "hidden",
+                width: "100%",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                borderRadius: "8px",
+            }}
         >
             {Array.from({ length: 7 }).map((_, index) => {
                 const song = source.songs[index];
@@ -48,7 +55,6 @@ export default function Preview({
                 const isOverlappingImage = index > 0;
 
                 if (song) {
-                    // Render song image
                     return (
                         <img
                             key={index}
@@ -60,12 +66,11 @@ export default function Preview({
                                     ? marginLeft
                                     : "0px",
                                 height: `${imageSideLength}px`,
+                                boxShadow: "var(--shadow)",
                             }}
-                            className="drop-shadow"
                         />
                     );
                 } else {
-                    // Render placeholder if song is not available
                     return (
                         <div
                             key={`placeholder-${index}`}
@@ -76,11 +81,13 @@ export default function Preview({
                                     : "0px",
                                 height: `${imageSideLength}px`,
                                 width: `${imageSideLength}px`,
+                                background: "var(--card-bg)",
+                                border: "1px solid var(--border)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
                             }}
-                            className="drop-shadow flex items-center justify-center bg-gradient-to-r from-background to-[#221A17]"
-                        >
-                            {/* Optional: Content or icons inside the div */}
-                        </div>
+                        />
                     );
                 }
             })}

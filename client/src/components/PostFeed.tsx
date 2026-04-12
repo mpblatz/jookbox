@@ -25,7 +25,6 @@ export default function PostFeed({
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
 
-    // Check if the current user has liked the post
     const isPostLikedByUser = (post: Post) => {
         return (
             currentUser &&
@@ -33,7 +32,6 @@ export default function PostFeed({
         );
     };
 
-    // Handle like
     const handleLike = async (postId: string) => {
         if (currentUser) {
             await createLike({
@@ -47,7 +45,6 @@ export default function PostFeed({
         }
     };
 
-    // Handle unlike
     const handleUnlike = async (postId: string) => {
         if (currentUser) {
             await deleteLike({
@@ -60,73 +57,168 @@ export default function PostFeed({
     const renderFeed = () => {
         if (Object.keys(posts).length === 0) {
             return (
-                <div className="h-[300px] flex justify-center items-center">
-                    <p>{emptyMessage}</p>
+                <div
+                    style={{
+                        height: "300px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
+                    <p style={{ color: "var(--text-muted)" }}>{emptyMessage}</p>
                 </div>
             );
         } else {
             return (
-                <div className="flex flex-col space-y-6">
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "24px",
+                    }}
+                >
                     {posts.map((post) => (
                         <div
                             key={post.id}
-                            className="flex flex-row space-x-4 w-full items-center"
+                            style={{
+                                display: "flex",
+                                gap: "16px",
+                                width: "100%",
+                                alignItems: "center",
+                            }}
                         >
-                            <div className="w-[55%]">
+                            <div style={{ width: "55%" }}>
                                 <Preview
                                     source={post}
                                     path={`/post/${post.id}`}
                                 />
                             </div>
 
-                            <div className="flex flex-col w-[380px] flex-shrink-0 self-start mt-2 space-y-1">
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    width: "380px",
+                                    flexShrink: 0,
+                                    alignSelf: "flex-start",
+                                    marginTop: "8px",
+                                    gap: "4px",
+                                }}
+                            >
                                 <button
-                                    className="w-fit"
-                                    onClick={() => navigate(`/post/${post.id}`)}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        padding: 0,
+                                        textAlign: "left",
+                                        width: "fit-content",
+                                    }}
+                                    onClick={() =>
+                                        navigate(`/post/${post.id}`)
+                                    }
                                 >
-                                    <p className="text-xl font-bold">
+                                    <p
+                                        style={{
+                                            fontSize: "1.25rem",
+                                            fontWeight: 700,
+                                            color: "var(--text)",
+                                        }}
+                                    >
                                         {post.title}
                                     </p>
                                 </button>
-                                <div className="flex flex-row space-x-8 items-center text-silver">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "24px",
+                                        alignItems: "center",
+                                        color: "var(--text-muted)",
+                                        fontSize: "14px",
+                                    }}
+                                >
                                     <button
-                                        className="flex space-x-1 items-center"
+                                        style={{
+                                            display: "flex",
+                                            gap: "4px",
+                                            alignItems: "center",
+                                            background: "none",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            color: "var(--text-muted)",
+                                            fontSize: "14px",
+                                            fontFamily:
+                                                "'IBM Plex Sans', sans-serif",
+                                            padding: 0,
+                                        }}
                                         onClick={() =>
-                                            navigate(`/user/${post.author.id}`)
+                                            navigate(
+                                                `/user/${post.author.id}`
+                                            )
                                         }
                                     >
                                         <CircleUserRound size={18} />
-                                        <p>{post.author.displayName}</p>
+                                        <span>{post.author.displayName}</span>
                                     </button>
-                                    <div className="flex flex-row space-x-2 justify-center">
-                                        <p>{post.total}</p>
-                                        <p>songs</p>
-                                    </div>
+                                    <span>
+                                        {post.total} songs
+                                    </span>
 
                                     {isPostLikedByUser(post) ? (
                                         <button
-                                            className="flex space-x-1 items-center"
+                                            style={{
+                                                display: "flex",
+                                                gap: "4px",
+                                                alignItems: "center",
+                                                background: "none",
+                                                border: "none",
+                                                cursor: "pointer",
+                                                color: "var(--text-muted)",
+                                                padding: 0,
+                                            }}
                                             onClick={() =>
                                                 handleUnlike(post.id)
                                             }
                                         >
                                             <Heart
                                                 size={18}
-                                                className="fill-primary text-primary"
+                                                fill="var(--accent)"
+                                                color="var(--accent)"
                                             />
-                                            <p>{post.likes.length}</p>
+                                            <span>{post.likes.length}</span>
                                         </button>
                                     ) : (
                                         <button
-                                            className="flex space-x-1 items-center"
-                                            onClick={() => handleLike(post.id)}
+                                            style={{
+                                                display: "flex",
+                                                gap: "4px",
+                                                alignItems: "center",
+                                                background: "none",
+                                                border: "none",
+                                                cursor: "pointer",
+                                                color: "var(--text-muted)",
+                                                padding: 0,
+                                            }}
+                                            onClick={() =>
+                                                handleLike(post.id)
+                                            }
                                         >
                                             <Heart size={18} />
-                                            <p>{post.likes.length}</p>
+                                            <span>{post.likes.length}</span>
                                         </button>
                                     )}
                                     <button
-                                        className="w-fit flex space-x-1 items-center"
+                                        style={{
+                                            display: "flex",
+                                            gap: "4px",
+                                            alignItems: "center",
+                                            background: "none",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            color: "var(--text-muted)",
+                                            padding: 0,
+                                            width: "fit-content",
+                                        }}
                                         onClick={() =>
                                             navigate(
                                                 `/post/${post.id}/comments`
@@ -134,15 +226,23 @@ export default function PostFeed({
                                         }
                                     >
                                         <MessageCircle size={18} />
-                                        <p>{post.comments.length}</p>
+                                        <span>{post.comments.length}</span>
                                     </button>
-                                    <p>
+                                    <span>
                                         {post.createdAt
                                             ? formatPostTime(post.createdAt)
                                             : "*"}
-                                    </p>
+                                    </span>
                                 </div>
-                                <p className="text-ellipsis	whitespace-nowrap overflow-hidden text-silver">
+                                <p
+                                    style={{
+                                        color: "var(--text-muted)",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        fontSize: "14px",
+                                    }}
+                                >
                                     {post.description ?? ""}
                                 </p>
                             </div>
@@ -153,46 +253,4 @@ export default function PostFeed({
         }
     };
     return <>{renderFeed()}</>;
-}
-
-{
-    /* <button
-        className="flex flex-row drop-shadow-xl"
-        onClick={() => navigate(`/post/${post.id}`)}
-    >
-        {Array.from({ length: 7 }).map((_, index) => {
-            const song = post.songs[index];
-            const zIndex = 1000 - index;
-            const isOverlappingImage = index > 0;
-
-            if (song) {
-                // Render song image
-                return (
-                    <img
-                        key={index}
-                        src={song.imageUrl}
-                        className={`w-28 h-28 drop-shadow ${
-                            isOverlappingImage
-                                ? "ml-[-50px]"
-                                : ""
-                        }`}
-                        style={{ zIndex }}
-                    />
-                );
-            } else {
-                // Render placeholder if song is not available
-                return (
-                    <div
-                        key={index}
-                        className={`w-28 h-28 border border-snow bg-white shadow-inner drop-shadow ${
-                            isOverlappingImage
-                                ? "ml-[-50px]"
-                                : ""
-                        }`}
-                        style={{ zIndex }}
-                    ></div>
-                );
-            }
-        })}
-    </button> */
 }

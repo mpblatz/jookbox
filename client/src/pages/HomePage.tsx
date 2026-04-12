@@ -49,23 +49,23 @@ export default function HomePage() {
     if (isLoading) return <FeedSkeleton />;
 
     return (
-        <div className="space-y-6">
-            <div className="space-y-2">
-                <div className="flex space-x-4">
-                    <StyledNavLink
-                        to="/feed"
-                        label="For You"
-                        pendingClasses=""
-                        activeClasses="border-b-2 border-primary"
-                        end
-                    />
-                    <StyledNavLink
-                        to="/feed/following"
-                        label="Following"
-                        pendingClasses=""
-                        activeClasses="border-b-2 border-primary"
-                    />
-                </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div style={{ display: "flex", gap: "16px" }}>
+                <StyledNavLink
+                    to="/feed"
+                    label="For You"
+                    pendingClasses=""
+                    activeClasses="border-b-2"
+                    style={{ borderColor: "var(--accent)" }}
+                    end
+                />
+                <StyledNavLink
+                    to="/feed/following"
+                    label="Following"
+                    pendingClasses=""
+                    activeClasses="border-b-2"
+                    style={{ borderColor: "var(--accent)" }}
+                />
             </div>
             <PostFeed posts={postsToShow ?? []} emptyMessage={emptyMessage} />
         </div>

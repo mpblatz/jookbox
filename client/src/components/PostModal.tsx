@@ -13,40 +13,44 @@ import {
 import { isAppleTokenExpired } from "@/redux/features/apple/appleSlice";
 import AppleAuthButton from "./apple/AppleAuthButton";
 import { fetchAllPlaylistsByMusicUserToken } from "@/api/routes/apple";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "./ui/select";
+import { Dialog } from "./ui/dialog";
+import { ChevronDown } from "lucide-react";
 import { useCreatePostMutation } from "@/redux/api/routes/post";
 
+const btnStyle: React.CSSProperties = {
+    padding: "10px 16px",
+    border: "1px solid var(--btn-border)",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontFamily: "'IBM Plex Sans', sans-serif",
+    fontWeight: 500,
+    transition: "border-color 0.2s ease",
+};
+
+const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "8px 12px",
+    background: "var(--input-bg)",
+    border: "1px solid var(--border)",
+    borderRadius: "8px",
+    color: "var(--text)",
+    fontSize: "14px",
+    fontFamily: "'IBM Plex Sans', sans-serif",
+    outline: "none",
+    transition: "border-color 0.2s ease",
+};
+
 export default function PostModal({ children }: { children: JSX.Element }) {
+    const [open, setOpen] = useState(false);
     const [playlistOptions, setPlaylistOptions] = useState<
-        {
-            label: string;
-            value: any;
-        }[]
+        { label: string; value: any }[]
     >([]);
     const [selectedOption, setSelectedOption] = useState<string>("");
     const [selectedRadio, setSelectedRadio] = useState("");
+    const [selectOpen, setSelectOpen] = useState(false);
 
     const dispatch = useDispatch();
-
     const [createPost] = useCreatePostMutation();
 
     const user = useSelector((state: RootState) => state.userReducer.user);
@@ -73,6 +77,7 @@ export default function PostModal({ children }: { children: JSX.Element }) {
         setSelectedOption(val);
         setValue("title", playlistOptions[+val].value.name);
         setValue("description", playlistOptions[+val].value.description);
+        setSelectOpen(false);
     };
 
     const handleClearOption = () => {
@@ -109,16 +114,6 @@ export default function PostModal({ children }: { children: JSX.Element }) {
             setPlaylistOptions(formattedPlaylists);
         }
     }
-
-    const renderPlaylistOptions = playlistOptions.map(
-        (option: any, index: number) => {
-            return (
-                <SelectItem key={index} value={index.toString()}>
-                    {option.label}
-                </SelectItem>
-            );
-        }
-    );
 
     const handleAppleSelect = async () => {
         if (selectedRadio != "apple") {
@@ -170,135 +165,333 @@ export default function PostModal({ children }: { children: JSX.Element }) {
         !isSpotifyTokenExpired(spotifyToken) && handleSpotifySelect();
     }, [spotifyToken, appleToken]);
 
+    const radioStyle = (selected: boolean, disabled: boolean): React.CSSProperties => ({
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px",
+        width: "100%",
+        background: selected ? "var(--btn-bg)" : "transparent",
+        border: `1px solid ${selected ? "var(--accent)" : "var(--border)"}`,
+        borderRadius: "8px",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.5 : 1,
+        fontSize: "14px",
+        fontFamily: "'IBM Plex Sans', sans-serif",
+        color: "var(--text)",
+        transition: "all 0.2s ease",
+    });
+
     return (
         <>
-            <Dialog>
-                <DialogTrigger asChild>{children}</DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] min-w-[450px]">
-                    <DialogHeader>
-                        <DialogTitle>Post</DialogTitle>
-                        <DialogDescription>
-                            Select a playlist of yours to share with the world!
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit(handlePost)}>
-                        <div className="space-y-2">
-                            <p className="font-medium">Origin</p>
-                            <div>
-                                <div className="flex space-x-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => handleSpotifySelect()}
-                                        className="flex p-3 block w-full hover:bg-silver border-2 rounded-lg text-sm focus:ring-1 focus:border-primary focus:ring-primary"
-                                        disabled={isSpotifyTokenExpired(
-                                            spotifyToken
-                                        )}
-                                    >
-                                        <div className="flex flex-col items-start">
-                                            <p className="text-sm">Spotify</p>
-                                        </div>
-                                        <input
-                                            type="radio"
-                                            name="radio-post-origin"
-                                            className="accent-primary shrink-0 ms-auto mt-0.5 border-silver rounded-full text-primary disabled:opacity-50 disabled:pointer-events-none"
-                                            checked={
-                                                selectedRadio === "spotify"
-                                            }
-                                            readOnly
-                                            disabled={isSpotifyTokenExpired(
-                                                spotifyToken
-                                            )}
-                                        />
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => handleAppleSelect()}
-                                        className="flex p-3 block w-full hover:bg-silver border-2 rounded-lg text-sm focus:ring-1 focus:border-primary focus:ring-primary"
-                                        disabled={isAppleTokenExpired(
-                                            appleToken
-                                        )}
-                                    >
-                                        <p className="text-sm">Apple Music</p>
-
-                                        <input
-                                            type="radio"
-                                            name="radio-post-origin"
-                                            className="accent-primary shrink-0 ms-auto mt-0.5 border-silver rounded-full text-primary disabled:opacity-50 disabled:pointer-events-none"
-                                            checked={selectedRadio === "apple"}
-                                            readOnly
-                                            disabled={isAppleTokenExpired(
-                                                appleToken
-                                            )}
-                                        />
-                                    </button>
+            <span onClick={() => setOpen(true)} style={{ cursor: "pointer" }}>
+                {children}
+            </span>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <h3
+                    style={{
+                        fontSize: "1.125rem",
+                        fontWeight: 600,
+                        fontFamily: "'JetBrains Mono', monospace",
+                    }}
+                >
+                    Post
+                </h3>
+                <p
+                    style={{
+                        fontSize: "14px",
+                        color: "var(--text-muted)",
+                    }}
+                >
+                    Select a playlist of yours to share with the world!
+                </p>
+                <form onSubmit={handleSubmit(handlePost)}>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "12px",
+                        }}
+                    >
+                        <p
+                            style={{
+                                fontWeight: 600,
+                                fontSize: "13px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                            }}
+                        >
+                            Origin
+                        </p>
+                        <div>
+                            <div style={{ display: "flex", gap: "8px" }}>
+                                <button
+                                    type="button"
+                                    onClick={() => handleSpotifySelect()}
+                                    style={radioStyle(
+                                        selectedRadio === "spotify",
+                                        isSpotifyTokenExpired(spotifyToken)
+                                    )}
+                                    disabled={isSpotifyTokenExpired(
+                                        spotifyToken
+                                    )}
+                                >
+                                    Spotify
+                                    <input
+                                        type="radio"
+                                        checked={selectedRadio === "spotify"}
+                                        readOnly
+                                        style={{
+                                            accentColor: "var(--accent)",
+                                        }}
+                                    />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleAppleSelect()}
+                                    style={radioStyle(
+                                        selectedRadio === "apple",
+                                        isAppleTokenExpired(appleToken)
+                                    )}
+                                    disabled={isAppleTokenExpired(appleToken)}
+                                >
+                                    Apple Music
+                                    <input
+                                        type="radio"
+                                        checked={selectedRadio === "apple"}
+                                        readOnly
+                                        style={{
+                                            accentColor: "var(--accent)",
+                                        }}
+                                    />
+                                </button>
+                            </div>
+                            <div style={{ display: "flex", gap: "8px" }}>
+                                <div style={{ width: "50%" }}>
+                                    {isSpotifyTokenExpired(spotifyToken) ? (
+                                        <button
+                                            type="button"
+                                            style={{
+                                                background: "none",
+                                                border: "none",
+                                                cursor: "pointer",
+                                                fontSize: "12px",
+                                                color: "var(--text-faint)",
+                                                textDecoration: "underline",
+                                                fontFamily:
+                                                    "'IBM Plex Sans', sans-serif",
+                                                padding: "4px 0",
+                                            }}
+                                            onClick={() => {
+                                                window.location.href = `${
+                                                    import.meta.env
+                                                        .VITE_SERVER_URL
+                                                }/spotify/auth`;
+                                            }}
+                                        >
+                                            Connect to Spotify
+                                        </button>
+                                    ) : null}
                                 </div>
-                                <div className="flex space-x-2">
-                                    <div className="w-1/2">
-                                        {isSpotifyTokenExpired(spotifyToken) ? (
-                                            <Button
-                                                type="button"
-                                                variant="link"
-                                                className="underline text-xs text-silver"
-                                                onClick={() => {
-                                                    window.location.href = `${
-                                                        import.meta.env
-                                                            .VITE_SERVER_URL
-                                                    }/spotify/auth`;
-                                                }}
-                                            >
-                                                Connect to Spotify
-                                            </Button>
-                                        ) : null}
-                                    </div>
-                                    <div className="w-1/2">
-                                        <AppleAuthButton />
-                                    </div>
+                                <div style={{ width: "50%" }}>
+                                    <AppleAuthButton />
                                 </div>
                             </div>
-
-                            <p className="font-medium">Details</p>
-
-                            <Select
-                                onValueChange={handleSelectOption}
-                                value={selectedOption}
-                            >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Origin Playlist" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        {renderPlaylistOptions}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                            <div className="space-y-1">
-                                <Input
-                                    type="text"
-                                    placeholder="Title"
-                                    {...register("title", {
-                                        required: "Title is required",
-                                        minLength: 2,
-                                    })}
-                                />
-                                {errors.title && (
-                                    <p className="text-red-1 text-xs">
-                                        {errors.title.message as string}
-                                    </p>
-                                )}
-                            </div>
-
-                            <Textarea
-                                rows={5}
-                                placeholder="Description"
-                                {...register("description", {})}
-                            />
-                            <DialogFooter>
-                                <Button type="submit">Save Changes</Button>
-                            </DialogFooter>
                         </div>
-                    </form>
-                </DialogContent>
+
+                        <p
+                            style={{
+                                fontWeight: 600,
+                                fontSize: "13px",
+                                fontFamily: "'JetBrains Mono', monospace",
+                            }}
+                        >
+                            Details
+                        </p>
+
+                        {/* Custom Select */}
+                        <div style={{ position: "relative" }}>
+                            <button
+                                type="button"
+                                onClick={() => setSelectOpen(!selectOpen)}
+                                style={{
+                                    ...inputStyle,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    cursor: "pointer",
+                                    textAlign: "left",
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        color: selectedOption
+                                            ? "var(--text)"
+                                            : "var(--text-faint)",
+                                    }}
+                                >
+                                    {selectedOption
+                                        ? playlistOptions[+selectedOption]
+                                              ?.label
+                                        : "Origin Playlist"}
+                                </span>
+                                <ChevronDown
+                                    size={14}
+                                    style={{
+                                        color: "var(--text-faint)",
+                                        transition: "transform 0.2s ease",
+                                        transform: selectOpen
+                                            ? "rotate(180deg)"
+                                            : "rotate(0deg)",
+                                    }}
+                                />
+                            </button>
+                            {selectOpen && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "100%",
+                                        left: 0,
+                                        right: 0,
+                                        marginTop: "4px",
+                                        background: "var(--card-bg)",
+                                        border: "1px solid var(--border)",
+                                        borderRadius: "8px",
+                                        maxHeight: "200px",
+                                        overflowY: "auto",
+                                        zIndex: 50,
+                                        boxShadow: "var(--shadow-hover)",
+                                    }}
+                                >
+                                    {playlistOptions.map((option, index) => (
+                                        <button
+                                            type="button"
+                                            key={index}
+                                            onClick={() =>
+                                                handleSelectOption(
+                                                    index.toString()
+                                                )
+                                            }
+                                            style={{
+                                                display: "block",
+                                                width: "100%",
+                                                padding: "8px 12px",
+                                                background:
+                                                    selectedOption ===
+                                                    index.toString()
+                                                        ? "var(--btn-bg)"
+                                                        : "transparent",
+                                                border: "none",
+                                                cursor: "pointer",
+                                                fontSize: "14px",
+                                                fontFamily:
+                                                    "'IBM Plex Sans', sans-serif",
+                                                color: "var(--text)",
+                                                textAlign: "left",
+                                                transition:
+                                                    "background 0.15s ease",
+                                            }}
+                                            onMouseEnter={(e) =>
+                                                (e.currentTarget.style.background =
+                                                    "var(--btn-bg)")
+                                            }
+                                            onMouseLeave={(e) =>
+                                                (e.currentTarget.style.background =
+                                                    selectedOption ===
+                                                    index.toString()
+                                                        ? "var(--btn-bg)"
+                                                        : "transparent")
+                                            }
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "4px",
+                            }}
+                        >
+                            <input
+                                type="text"
+                                placeholder="Title"
+                                style={inputStyle}
+                                {...register("title", {
+                                    required: "Title is required",
+                                    minLength: 2,
+                                })}
+                                onFocus={(e) =>
+                                    (e.currentTarget.style.borderColor =
+                                        "var(--accent)")
+                                }
+                                onBlur={(e) =>
+                                    (e.currentTarget.style.borderColor =
+                                        "var(--border)")
+                                }
+                            />
+                            {errors.title && (
+                                <p
+                                    style={{
+                                        color: "var(--destructive)",
+                                        fontSize: "12px",
+                                    }}
+                                >
+                                    {errors.title.message as string}
+                                </p>
+                            )}
+                        </div>
+
+                        <textarea
+                            rows={5}
+                            placeholder="Description"
+                            style={{
+                                ...inputStyle,
+                                resize: "vertical",
+                                minHeight: "80px",
+                            }}
+                            {...register("description", {})}
+                            onFocus={(e) =>
+                                (e.currentTarget.style.borderColor =
+                                    "var(--accent)")
+                            }
+                            onBlur={(e) =>
+                                (e.currentTarget.style.borderColor =
+                                    "var(--border)")
+                            }
+                        />
+
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                            }}
+                        >
+                            <button
+                                type="submit"
+                                style={{
+                                    ...btnStyle,
+                                    background: "var(--accent)",
+                                    color: "#fff",
+                                    border: "none",
+                                }}
+                                onMouseEnter={(e) =>
+                                    (e.currentTarget.style.background =
+                                        "var(--accent-hover)")
+                                }
+                                onMouseLeave={(e) =>
+                                    (e.currentTarget.style.background =
+                                        "var(--accent)")
+                                }
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </Dialog>
         </>
     );

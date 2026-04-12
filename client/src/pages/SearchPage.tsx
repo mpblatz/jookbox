@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { searchPosts, searchUsers } from "@/api/routes/search";
 import StyledNavLink from "@/components/StyledNavLink";
-import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export default function SearchPage({ postsSearch = false }) {
     const [users, setUsers] = useState<User[]>([]);
@@ -28,16 +28,38 @@ export default function SearchPage({ postsSearch = false }) {
         if (postsSearch) {
             return (
                 <div>
-                    <ul className="space-y-2">
+                    <ul style={{ display: "flex", flexDirection: "column", gap: "8px", listStyle: "none", padding: 0 }}>
                         {posts.map((post) => (
                             <li key={post.id}>
                                 <button
                                     onClick={() => navigate(`/post/${post.id}`)}
-                                    className="flex space-x-4"
+                                    style={{
+                                        display: "flex",
+                                        gap: "16px",
+                                        background: "none",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        color: "var(--text)",
+                                        fontSize: "14px",
+                                        fontFamily: "'IBM Plex Sans', sans-serif",
+                                        padding: "8px",
+                                        borderRadius: "8px",
+                                        transition: "background 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) =>
+                                        (e.currentTarget.style.background =
+                                            "var(--btn-bg)")
+                                    }
+                                    onMouseLeave={(e) =>
+                                        (e.currentTarget.style.background =
+                                            "none")
+                                    }
                                 >
-                                    <p> {post.title}</p>
-                                    <p>●</p>
-                                    <p>{post.author.displayName}</p>
+                                    <span>{post.title}</span>
+                                    <span style={{ color: "var(--text-faint)" }}>·</span>
+                                    <span style={{ color: "var(--text-muted)" }}>
+                                        {post.author.displayName}
+                                    </span>
                                 </button>
                             </li>
                         ))}
@@ -47,11 +69,30 @@ export default function SearchPage({ postsSearch = false }) {
         } else {
             return (
                 <div>
-                    <ul className="space-y-2">
+                    <ul style={{ display: "flex", flexDirection: "column", gap: "8px", listStyle: "none", padding: 0 }}>
                         {users.map((user) => (
                             <li key={user.id}>
                                 <button
                                     onClick={() => navigate(`/user/${user.id}`)}
+                                    style={{
+                                        background: "none",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        color: "var(--text)",
+                                        fontSize: "14px",
+                                        fontFamily: "'IBM Plex Sans', sans-serif",
+                                        padding: "8px",
+                                        borderRadius: "8px",
+                                        transition: "background 0.2s ease",
+                                    }}
+                                    onMouseEnter={(e) =>
+                                        (e.currentTarget.style.background =
+                                            "var(--btn-bg)")
+                                    }
+                                    onMouseLeave={(e) =>
+                                        (e.currentTarget.style.background =
+                                            "none")
+                                    }
                                 >
                                     {user.displayName}
                                 </button>
@@ -64,55 +105,59 @@ export default function SearchPage({ postsSearch = false }) {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="space-y-2">
-                <div className="flex space-x-4">
-                    <StyledNavLink
-                        to="/search/users"
-                        label="Users"
-                        pendingClasses=""
-                        activeClasses="border-b-2 border-primary"
-                    />
-                    <StyledNavLink
-                        to="/search/posts"
-                        label="Posts"
-                        pendingClasses=""
-                        activeClasses="border-b-2 border-primary"
-                    />
-                </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div style={{ display: "flex", gap: "16px" }}>
+                <StyledNavLink
+                    to="/search/users"
+                    label="Users"
+                    pendingClasses=""
+                    activeClasses="border-b-2"
+                    style={{ borderColor: "var(--accent)" }}
+                />
+                <StyledNavLink
+                    to="/search/posts"
+                    label="Posts"
+                    pendingClasses=""
+                    activeClasses="border-b-2"
+                    style={{ borderColor: "var(--accent)" }}
+                />
             </div>
 
-            <label
-                title="default-search"
-                className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-            >
-                Search
-            </label>
-            <div className="relative">
-                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <svg
-                        className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 20 20"
-                    >
-                        <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                        />
-                    </svg>
+            <div style={{ position: "relative" }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        left: "12px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        color: "var(--text-faint)",
+                        pointerEvents: "none",
+                    }}
+                >
+                    <Search size={16} />
                 </div>
-                <Input
+                <input
                     type="search"
-                    id="default-search"
-                    className="block w-full p-4 ps-10 "
                     placeholder="Search Users, Playlists..."
                     onChange={(e) => handleSearch(e)}
-                    required
+                    style={{
+                        width: "100%",
+                        padding: "10px 12px 10px 36px",
+                        background: "var(--input-bg)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "8px",
+                        color: "var(--text)",
+                        fontSize: "14px",
+                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        outline: "none",
+                        transition: "border-color 0.2s ease",
+                    }}
+                    onFocus={(e) =>
+                        (e.currentTarget.style.borderColor = "var(--accent)")
+                    }
+                    onBlur={(e) =>
+                        (e.currentTarget.style.borderColor = "var(--border)")
+                    }
                 />
             </div>
             {renderSearchResults()}

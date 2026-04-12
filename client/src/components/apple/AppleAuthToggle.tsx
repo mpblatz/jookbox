@@ -4,7 +4,20 @@ import { getAppleDeveloperToken } from "@/api/routes/apple";
 import { clearApple, setApple } from "@/redux/features/apple/appleSlice";
 import { RootState } from "@/redux/store";
 import { getExpirationTime } from "@/utils/time";
-import { Button } from "../ui/button";
+
+const btnStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "10px 16px",
+    border: "1px solid var(--btn-border)",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontFamily: "'IBM Plex Sans', sans-serif",
+    fontWeight: 500,
+    background: "var(--btn-bg)",
+    color: "var(--text)",
+    transition: "border-color 0.2s ease",
+};
 
 export default function AppleAuthToggle() {
     const [appleTokenExpirationTime, setAppleTokenExpirationTime] = useState(
@@ -36,7 +49,7 @@ export default function AppleAuthToggle() {
         try {
             const music = window.MusicKit.getInstance();
             const musicUserToken = await music.authorize();
-            const expirationSeconds = 90 * 24 * 60 * 60; // Example: 90 days for illustration
+            const expirationSeconds = 90 * 24 * 60 * 60;
             const expirationTime = await getExpirationTime(expirationSeconds);
 
             dispatch(
@@ -61,21 +74,35 @@ export default function AppleAuthToggle() {
             {appleToken.musicUserToken &&
             appleToken.expirationTime &&
             appleTokenExpirationTime > now ? (
-                <Button
-                    variant="secondary"
-                    className="w-full"
+                <button
+                    style={btnStyle}
                     onClick={unauthorize}
+                    onMouseEnter={(e) =>
+                        (e.currentTarget.style.borderColor =
+                            "var(--btn-hover-border)")
+                    }
+                    onMouseLeave={(e) =>
+                        (e.currentTarget.style.borderColor =
+                            "var(--btn-border)")
+                    }
                 >
                     Disconnect Apple Music Account
-                </Button>
+                </button>
             ) : (
-                <Button
-                    variant="secondary"
-                    className="w-full"
+                <button
+                    style={btnStyle}
                     onClick={authorize}
+                    onMouseEnter={(e) =>
+                        (e.currentTarget.style.borderColor =
+                            "var(--btn-hover-border)")
+                    }
+                    onMouseLeave={(e) =>
+                        (e.currentTarget.style.borderColor =
+                            "var(--btn-border)")
+                    }
                 >
                     Connect Apple Music Account
-                </Button>
+                </button>
             )}
         </div>
     );

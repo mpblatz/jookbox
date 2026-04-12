@@ -7,29 +7,25 @@ import "./styles/index.css";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./redux/store.ts";
 import { Provider } from "react-redux";
-import { MaterialDesignContent, SnackbarProvider } from "notistack";
+import { SnackbarProvider } from "notistack";
 import { ThemeProvider } from "./components/theme-provider.tsx";
-import styled from "styled-components";
 
 const queryClient = new QueryClient();
 
-const StyledMaterialDesignContent = styled(MaterialDesignContent)(() => ({
-    "&.notistack-MuiContent-success": {
-        backgroundColor: "#e11d47",
-    },
-}));
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ThemeProvider defaultTheme="light" storageKey="jookbox-theme">
             <QueryClientProvider client={queryClient}>
                 <SnackbarProvider
-                    Components={{
-                        success: StyledMaterialDesignContent,
-                    }}
                     anchorOrigin={{
                         vertical: "top",
                         horizontal: "center",
+                    }}
+                    style={{
+                        backgroundColor: "var(--accent)",
+                        color: "#fff",
+                        fontFamily: "'IBM Plex Sans', sans-serif",
+                        borderRadius: "8px",
                     }}
                 >
                     <Provider store={store}>

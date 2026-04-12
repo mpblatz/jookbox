@@ -20,59 +20,65 @@ import TermsOfService from "./pages/TermsOfService";
 
 export default function App() {
     return (
-        <>
-            <Router>
-                <div className="min-h-screen m-auto max-w-[920px] flex flex-col justify-between p-5">
-                    <div>
-                        <Navbar />
-                        <div className="mt-2 mb-8">
-                            <AllRoutes />
-                        </div>
+        <Router>
+            <div
+                style={{
+                    minHeight: "100vh",
+                    maxWidth: "920px",
+                    margin: "0 auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    padding: "20px",
+                }}
+            >
+                <div>
+                    <Navbar />
+                    <div style={{ marginTop: "8px", marginBottom: "32px" }}>
+                        <AllRoutes />
                     </div>
-                    <Footer />
                 </div>
-            </Router>
-        </>
+                <Footer />
+            </div>
+        </Router>
     );
 }
 
 function AllRoutes() {
     return (
-        <>
-            <Routes>
-                <Route path="/" element={<Navigate to="/feed" replace />} />
-                <Route path="/feed" element={<HomePage />} />
-                <Route path="/feed/following" element={<HomePage />} />
+        <Routes>
+            <Route path="/" element={<Navigate to="/feed" replace />} />
+            <Route path="/feed" element={<HomePage />} />
+            <Route path="/feed/following" element={<HomePage />} />
 
-                <Route
-                    path="/search"
-                    element={<Navigate to="/search/users" />}
-                />
-                <Route path="/search/users" element={<SearchPage />} />
-                <Route
-                    path="/search/posts"
-                    element={<SearchPage postsSearch />}
-                />
+            <Route
+                path="/search"
+                element={<Navigate to="/search/users" />}
+            />
+            <Route path="/search/users" element={<SearchPage />} />
+            <Route
+                path="/search/posts"
+                element={<SearchPage postsSearch />}
+            />
 
-                <Route path="/post/:id" element={<PostPage />} />
-                <Route
-                    path="/post/:id/comments"
-                    element={<PostPage showComments />}
-                />
+            <Route path="/post/:id" element={<PostPage />} />
+            <Route
+                path="/post/:id/comments"
+                element={<PostPage showComments />}
+            />
 
-                <Route path="/top/spotify/:id" element={<PlaylistPage />} />
-                <Route path="/top/apple/:id" element={<PlaylistPage />} />
+            <Route path="/top/spotify/:id" element={<PlaylistPage />} />
+            <Route path="/top/apple/:id" element={<PlaylistPage />} />
 
-                <Route path="/user/:id" element={<UserPage />} />
+            <Route path="/user/:id" element={<UserPage />} />
 
-                {/* Callbacks */}
-                <Route path="/callback/auth" element={<AuthCallback />} />
-                <Route path="/callback/spotify" element={<SpotifyCallback />} />
+            {/* Callbacks */}
+            <Route path="/callback/auth" element={<AuthCallback />} />
+            <Route path="/callback/spotify" element={<SpotifyCallback />} />
 
-                {/*Privacy Policy */}
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-            </Routes>
-        </>
+            {/*Privacy Policy */}
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+        </Routes>
     );
 }
